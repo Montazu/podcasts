@@ -14,7 +14,7 @@
 	<ul class="podcasts">
 		{#each podcasts as podcast}
 			<li class="podcasts__item">
-				<a class="podcasts__link" href={podcast.url_path}>
+				<a class="podcasts__link" href={podcast.slug}>
 					<img class="podcasts__image" src={podcast.image} alt={podcast.title} />
 					<h3 class="podcasts__title">{podcast.title}</h3>
 					<p class="podcasts__author">{podcast.author}</p>

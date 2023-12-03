@@ -1,32 +1,48 @@
+<script lang="ts">
+	import type { PageData } from './$types'
+	import { state } from '../../store'
+	export let data: PageData
+
+	const calcDuration = (duration: string) => {
+		let seconds: number
+		if (duration.includes(':')) {
+			const [h, m, s] = duration.split(':')
+			if (s) {
+				seconds = +h * 3600 + +m * 60 + +s
+			} else {
+				seconds = +h * 60 + +m
+			}
+		} else {
+			seconds = +duration
+		}
+
+		const hours = Math.floor(seconds / 3600)
+		const minutes = Math.floor((seconds % 3600) / 60)
+
+		return hours ? `${hours} g ${minutes} min` : `${minutes} min`
+	}
+</script>
+
 <div class="podcast">
-	<img class="podcast__image" src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQEMfT8k-P0FQvUaXF8XxM4PpJ18SJiGy8iZkr0GOwIwfdbBRdQ" alt="Taby vs spacje" />
-	<h1 class="podcast__title">Taby vs spacje</h1>
-	<h2 class="podcast__author">The Software House</h2>
+	<img class="podcast__image" src={data.image} alt={data.title} />
+	<h1 class="podcast__title">{data.title}</h1>
+	<h2 class="podcast__author">{data.author}</h2>
 	<div class="podcast__options">
-		<a href="https://tsh.io/" target="_blank">Strona internetowa</a>
+		<a href={data.link} target="_blank">Odwiedź stronę</a>
 	</div>
-	<p class="podcast__description">Taby vs spacje to podcast prowadzony przez Adama Polaka (VP of Technology w The Software House) oraz Andrzeja Wysoczańskiego (Head of Frontend w The Software House). Dołącz do nas i posłuchaj o najważniejszych sporach związanych z branżą IT. Świat technologii ciągle się zmienia, a Adam i Andrzej oceniają najnowsze trendy i przedstawiają swoje poglądy na ich temat.</p>
+	<p class="podcast__description">{data.description}</p>
 </div>
 <ul class="list">
-	<li class="list__item">
-		<h3 class="list__title">#75 Taby vs spacje – Nie ma testów automatycznych bez testów manualnych. Kim tak naprawdę jest QA? Rozmawiamy z Marcinem Basiakowskim.</h3>
-		<p class="list__description">Z pozoru może się wydawać, że QA i development to dwa inne światy. Nic bardziej mylnego – ich jeden wspólny cel, to dostarczanie wysokiej jakości oprogramowania. Razem z naszym Head of Quality Assurance (Marcinem Basiakowskim) rozmawiamy o procesach, przełomowych momentach i przyszłości QA w świecie developmentu.</p>
-		<button class="list__duration">1 g 2 min</button>
-		<button class="list__download">Pobierz</button>
-	</li>
-	<li class="list__item">
-		<h3 class="list__title">#75 Taby vs spacje – Nie ma testów automatycznych bez testów manualnych. Kim tak naprawdę jest QA? Rozmawiamy z Marcinem Basiakowskim.</h3>
-		<p class="list__description">Z pozoru może się wydawać, że QA i development to dwa inne światy. Nic bardziej mylnego – ich jeden wspólny cel, to dostarczanie wysokiej jakości oprogramowania. Razem z naszym Head of Quality Assurance (Marcinem Basiakowskim) rozmawiamy o procesach, przełomowych momentach i przyszłości QA w świecie developmentu.</p>
-		<button class="list__play">1 g 2 min</button>
-		<button class="list__download">Pobierz</button>
-	</li>
-	<li class="list__item">
-		<h3 class="list__title">#75 Taby vs spacje – Nie ma testów automatycznych bez testów manualnych. Kim tak naprawdę jest QA? Rozmawiamy z Marcinem Basiakowskim.</h3>
-		<p class="list__description">Z pozoru może się wydawać, że QA i development to dwa inne światy. Nic bardziej mylnego – ich jeden wspólny cel, to dostarczanie wysokiej jakości oprogramowania. Razem z naszym Head of Quality Assurance (Marcinem Basiakowskim) rozmawiamy o procesach, przełomowych momentach i przyszłości QA w świecie developmentu.</p>
-		<button class="list__play">1 g 2 min</button>
-		<button class="list__download">Pobierz</button>
-	</li>
+	{#each data.episodes as episode}
+		<li class="list__item">
+			<h3 class="list__title">{episode.title}</h3>
+			<p class="list__description">{episode.contentSnippet}</p>
+			<button class="list__duration" on:click={() => $state = { title: episode.title, src: episode.enclosure.url, image: data.image }}>{calcDuration(episode.itunes.duration)}</button>
+			<!-- <button class="list__download">Pobierz</button> -->
+		</li>
+	{/each}
 </ul>
+
 <style lang="scss">
 	.podcast {
 		display: grid;
@@ -36,7 +52,7 @@
 
 		&__image {
 			grid-area: 1 / 1 / 3 / 2;
-			border-radius: .5rem;
+			border-radius: 0.5rem;
 			width: 8rem;
 		}
 
@@ -68,11 +84,12 @@
 			padding: 1rem 0;
 
 			&:not(:last-of-type) {
-				border-bottom: .1rem solid #303030;
+				border-bottom: 0.1rem solid #303030;
 			}
 		}
 
-		&__title, &__description {
+		&__title,
+		&__description {
 			overflow: hidden;
 			display: -webkit-box;
 			-webkit-box-orient: vertical;
